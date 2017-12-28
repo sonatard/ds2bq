@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/favclip/ucon"
-	"github.com/favclip/ucon/swagger"
 	"google.golang.org/appengine/taskqueue"
 )
 
@@ -84,7 +82,6 @@ type datastoreManagementService struct {
 
 // DatastoreManagementService serves Datastore management APIs.
 type DatastoreManagementService interface {
-	SetupWithUconSwagger(swPlugin *swagger.Plugin)
 	HandlePostTQ(c context.Context, req *Noop) (*Noop, error)
 	HandlePostDeleteList(c context.Context, r *http.Request, req *ReqListBase) (*Noop, error)
 	HandleDeleteAEBackupInformation(c context.Context, r *http.Request, req *AEBackupInformationDeleteReq) (*Noop, error)
@@ -105,19 +102,6 @@ func NewDatastoreManagementService(opts ...ManagementOption) DatastoreManagement
 	}
 
 	return s
-}
-
-// SetupWithUconSwagger setup handlers to ucon mux.
-func (s *datastoreManagementService) SetupWithUconSwagger(swPlugin *swagger.Plugin) {
-	tag := swPlugin.AddTag(&swagger.Tag{Name: "DatastoreManagement", Description: ""})
-
-	info := swagger.NewHandlerInfo(s.HandlePostTQ)
-	ucon.Handle("DELETE", s.APIDeleteBackupsURL, info)
-	info.Description, info.Tags = "Remove old Datastore backups", []string{tag.Name}
-
-	ucon.HandleFunc("GET,DELETE", s.DeleteOldBackupURL, s.HandlePostDeleteList)
-
-	ucon.HandleFunc("GET,DELETE", s.DeleteUnitOfBackupURL, s.HandleDeleteAEBackupInformation)
 }
 
 func (s *datastoreManagementService) HandlePostTQ(c context.Context, req *Noop) (*Noop, error) {

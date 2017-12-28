@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/favclip/ucon"
 	"github.com/mjibson/goon"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -150,7 +149,6 @@ type gcsWatcherService struct {
 
 // GCSWatcherService serves GCS Object Change Notification receiving APIs.
 type GCSWatcherService interface {
-	SetupWithUcon()
 	HandleOCN(c context.Context, r *http.Request, obj *GCSObject) error
 	HandleBackupToBQJob(c context.Context, req *GCSObjectToBQJobReq) error
 }
@@ -176,11 +174,6 @@ func NewGCSWatcherService(opts ...GCSWatcherOption) (GCSWatcherService, error) {
 	}
 
 	return s, nil
-}
-
-func (s *gcsWatcherService) SetupWithUcon() {
-	ucon.HandleFunc("GET,POST", s.OCNReceiveURL, s.HandleOCN) // from GCS, This API must not requires admin role.
-	ucon.HandleFunc("GET,POST", s.GCSObjectToBQJobURL, s.HandleBackupToBQJob)
 }
 
 // GCSObject is received json data from GCS OCN.

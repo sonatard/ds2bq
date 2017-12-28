@@ -20,12 +20,6 @@
   version = "v2.0.1"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/favclip/jwg"
-  packages = ["."]
-  revision = "2e0a6f4873bb5e8b5a6d13b6c1adbeec1a033d19"
-
-[[projects]]
   name = "github.com/favclip/qbg"
   packages = ["."]
   revision = "ae8057dfe96fdd9e23c88bf9ef5b616f231900c0"
@@ -88,7 +82,7 @@
 [[projects]]
   branch = "master"
   name = "google.golang.org/api"
-  packages = ["bigquery/v2","gensupport","googleapi","googleapi/internal/uritemplates"]
+  packages = ["bigquery/v2","datastore/v1beta1","gensupport","googleapi","googleapi/internal/uritemplates"]
   revision = "88d8826ad7655f8bdc7328b1ec3774f3851c3a44"
 
 [[projects]]
@@ -106,6 +100,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0d23bdf4529dad1d19dcae3622b43441ff6a4e48180ddb2f43b636bc5e14b785"
+  inputs-digest = "7e67a32e7dd73a50d8e8794cfe0a0f9bcf5c38d92e7c4ce75d99ec2513376328"
   solver-name = "gps-cdcl"
   solver-version = 1
