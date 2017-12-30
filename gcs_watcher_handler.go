@@ -1,11 +1,14 @@
 package ds2bq
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
+	"strings"
 
 	"google.golang.org/appengine"
+	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"
 )
 
@@ -55,6 +58,54 @@ func ReceiveOCNHandleFunc(bucketName, queueName, path string, kindNames []string
 			return
 		}
 	}
+}
+
+func ReceiveOCNHandleAllKindsFunc(bucketName, queueName, path string) http.HandlerFunc {
+	// TODO: processWithContext
+	return func(w http.ResponseWriter, r *http.Request) {
+		c := appengine.NewContext(r)
+
+		obj, err := DecodeGCSObject(r.Body)
+		if err != nil {
+			log.Errorf(c, "ds2bq: failed to decode request: %s", err)
+			return
+		}
+		defer r.Body.Close()
+
+		kinds, err := allKinds(c)
+		if err != nil {
+			panic(err)
+		}
+
+		if !obj.IsImportTarget(c, r, bucketName, kinds) {
+			return
+		}
+
+		err = ReceiveOCN(c, obj, queueName, path)
+		if err != nil {
+			log.Errorf(c, "ds2bq: failed to receive OCN: %s", err)
+			return
+		}
+	}
+}
+
+func allKinds(ctx context.Context) ([]string, error) {
+	ret, err := datastore.NewQuery("__kind__").KeysOnly().GetAll(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	kinds := make([]string, 0, len(ret))
+	for i := range ret {
+		n := ret[i].StringID()
+		// 除外したいKindを指定
+		if strings.HasPrefix(n, "_") {
+			continue
+		}
+		kinds = append(kinds, n)
+	}
+
+	return kinds, nil
 }
 
 // ImportBigQueryHandleFunc returns a http.HandlerFunc that imports GCSObject to BigQuery.

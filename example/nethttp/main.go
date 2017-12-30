@@ -27,7 +27,6 @@ func init() {
 	queueName = "datastore-to-bq"
 	bucketName := "ds2bqexample-nethttp"
 	datasetID := "datastore_imports"
-	targetKinds := []string{"Article", "User"}
-	http.HandleFunc(apiReceiveOCN, ds2bq.ReceiveOCNHandleFunc(bucketName, queueName, tqImportBigQuery, targetKinds)) // from GCS, This API must not requires admin role.
+	http.HandleFunc(apiReceiveOCN, ds2bq.ReceiveOCNHandleAllKindsFunc(bucketName, queueName, tqImportBigQuery)) // from GCS, This API must not requires admin role.
 	http.HandleFunc(tqImportBigQuery, ds2bq.ImportBigQueryHandleFunc(datasetID))
 }
