@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/favclip/ds2bq"
+	"github.com/sonatard/ds2bq"
 )
 
 const (
