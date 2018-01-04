@@ -74,8 +74,10 @@ func ReceiveOCNHandleAllKindsFunc(bucketName, queueName, path string) http.Handl
 
 		kinds, err := allKinds(c)
 		if err != nil {
-			panic(err)
+			log.Errorf(c, "ds2bq: failed to datastore all kinds: %s", err)
+			return
 		}
+		log.Infof(c, "ds2bq: datastore backup on GCS to BigQuery. target kind: %s", kinds)
 
 		if !obj.IsImportTarget(c, r, bucketName, kinds) {
 			return
